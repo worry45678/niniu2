@@ -4,7 +4,7 @@ from flask import Blueprint
 from .models import Room
 from . import db
 import json
-from .events import joinroom
+
 
 main = Blueprint('main', __name__)
 
@@ -25,6 +25,10 @@ def joinRoom():
     if Room.query.filter_by(id=request.args.get('roomid')).first():
         room = Room.query.filter_by(id=request.args.get('roomid')).first()
         session['room'] = room.id
+        if room.userpos(current_user) == 0 and room.count < 5:
+            room.join(current_user)
+        db.session.add(room)
+        db.session.commit()
         return 'joinroom'
     else:
-        return 'no room'
+        return 'join failed'

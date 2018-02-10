@@ -106,13 +106,7 @@ class Room(db.Model):
     end = db.Column('end', db.Boolean, default=False)
     paijus = db.relationship('Paiju', backref='roomname', lazy='dynamic')
     status = db.Column('status',db.Text, default=0)
-    players = {
-        1:user1_id,
-        2:user2_id,
-        3:user3_id,
-        4:user4_id,
-        5:user5_id
-    }
+
     def __init__(self,**kwargs):
         super(Room, self).__init__(**kwargs)
         self.id = random.randint(100000,1000000)
@@ -123,11 +117,11 @@ class Room(db.Model):
         elif user.id == self.user2_id:
             return 2
         elif user.id == self.user3_id:
-            return 4
+            return 3
         elif user.id == self.user4_id:
-            return 8
+            return 4
         elif user.id == self.user5_id:
-            return 16
+            return 5
         else:
             return 0
 
@@ -153,7 +147,20 @@ class Room(db.Model):
                %(self.id,self.createtime,self.confirm, user1, user2, user3, user4, user5, self.end) 
 
     def join(self, player):
-        self.players[self.count + 1] = player.id
+        if self.user2_id == None :
+            self.user2_id = player.id
+            return 2
+        elif self.user3_id == None:
+            self.user3_id = player.id
+            return 3
+        elif self.user4_id == None:
+            self.user4_id = player.id
+            return 4
+        elif self.user5_id ==None:
+            self.user5_id = player.id
+            return 5
+        else:
+            return 'no'
 
     def getStatus(self,current_user):
         user1 = self.user1.name if self.user1 else None

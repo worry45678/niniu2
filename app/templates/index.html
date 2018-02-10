@@ -23,7 +23,7 @@
                 <input type="text" placeholder="Room ID" v-model="roomid">
                 <button type="button" @click="joinRoom">JoinRoom</button>
             </div>
-            <div id="game" v-if="joined">
+            <div id="game">
                 <div id="testChat">
                     <input type="text" v-model="chatContext">
                     <button @click="chat">Chat</button>
@@ -87,6 +87,7 @@
                         axios.get('/createRoom')
                         .then(function(response){
                             self.joined = false
+                            self.socket.emit('joined', {})
                             console.log(response.data)
                         })
                     },
