@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1.0">
+        <title>niuniu3-socketio-vue</title>
+        <script src="../static/axios.min.js"></script>
+        <script src="../static/vue.js"></script>
+        <script src="../static/socket.io.min.js"></script>
+        <link rel="stylesheet" href="../static/phone.css">
+    </head>
+
+    <body>
+        <div id="app">
+            <div id="login" v-if="notLogin">
+                <input type="text" placeholder="username" v-model="username"> 
+                <input type="text" placeholder="password" v-model="password">
+                <button @click="login" type="button">Login</button>
+                <button @click="logout">Logout</button>
+            </div>
+            <div id="createOrJoinRoom" v-if="joined">
+                <button type="button" @click="createRoom">CreateRoom</button>
+                <input type="text" placeholder="Room ID" v-model="roomid">
+                <button type="button" @click="joinRoom">JoinRoom</button>
+            </div>
+            <div id="game" v-if="joined">
+                <div id="testChat">
+                    <input type="text" v-model="chatContext">
+                    <button @click="chat">Chat</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            var vm = new Vue({
+                el: '#app',
+                data () {
+                    return {
+                        username: null,
+                        password: null,
+                        notLogin: true,
+                        joined: false,
+                        roomid: null,
+                        socket: null,
+                        chatContext: null
+                    }
+                },
+                methods: {
+                    chat: function(){
+                        this.socket.emit('message', {msg:this.chatContext})
+                    },
+                    login: function(){
+                        var self = this
+                        axios.post('/login',{
+                            username:this.username,
+                            password:this.password
+                        })
+                        .then(function(response){
+                            self.password = null
+                            self.notLogin = false
+                            self.joined = true
+                            self.socket = io.connect('http://' + document.domain + ':' + location.port + '/game')
+                            self.socket.on('status', function(data){
+                                console.log(data)
+                            })
+                            self.socket.on('message', function(data){
+                                console.log(data)
+                            })
+                            console.log(response.data)
+                        })
+                        .catch(function(error){
+                            console.log(error)
+                        })
+                    },
+                    logout: function(){
+                        var self = this
+                        axios.get('/logout')
+                        .then(function(response){
+                            self.username = null
+                            self.createOrJoinRoom = false
+                            self.notLogin = true
+                            console.log(response.data)
+                        })
+                    },
+                    createRoom: function(){
+                        var self = this
+                        axios.get('/createRoom')
+                        .then(function(response){
+                            self.joined = false
+                            console.log(response.data)
+                        })
+                    },
+                    joinRoom: function(){
+                        var self = this
+                        axios.get('/joinRoom',{params:{roomid:self.roomid}})
+                        .then(function(response){
+                            self.socket.emit('joined', {})
+                            self.joined = false
+                            console.log(response.data)
+                        })
+                    },
+                    mounted: function(){
+                        console.log('mounted')
+
+                    }
+                }
+            })
+        </script>
+    </body>
+</html>
