@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1.0">
+        <title>niuniu3-socketio-vue</title>
+        <script src="../static/axios.min.js"></script>
+        <script src="../static/vue.js"></script>
+        <script src="../static/socket.io.min.js"></script>
+        <script src="../static/bluebird.min.js"></script>
+        <link rel="stylesheet" href="../static/phone.css">
+    </head>
+
+    <body>
+        <div id="app">
+            <div id="game">
+                <div id="testChat">
+                    <input type="text" v-model="chatContext">
+                    <button @click="chat">Chat</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            var vm = new Vue({
+                el: '#app',
+                data: function() {
+                    return {
+                        socket: null,
+                        chatContext: null
+                    }
+                },
+                methods: {
+                    chat: function(){
+                        this.socket.emit('message', {msg:this.chatContext})
+                    },
+                },
+                mounted: function(){
+                    console.log('mounted')
+                    this.socket = io.connect('http://' + document.domain + ':' + location.port + '/game')
+                    this.socket.emit('joined',{})
+                    this.socket.on('status', function(data){
+                        console.log(data)
+                    })
+                    this.socket.on('message', function(data){
+                        console.log(data)
+                    })
+                }
+            })
+        </script>
+    </body>
+</html>

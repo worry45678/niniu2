@@ -20,15 +20,11 @@
                 <button @click="logout">Logout</button>
             </div>
             <div id="createOrJoinRoom" v-if="joined">
-                <button type="button" @click="createRoom">CreateRoom</button>
-                <input type="text" placeholder="Room ID" v-model="roomid">
-                <button type="button" @click="joinRoom">JoinRoom</button>
-            </div>
-            <div id="game">
-                <div id="testChat">
-                    <input type="text" v-model="chatContext">
-                    <button @click="chat">Chat</button>
-                </div>
+                <button type="button"><a href="./createRoom">CreateRoom</a></button>
+                <form action="./joinRoom" method="POST">
+                <input type="text" placeholder="Room ID" name="room">
+                <button type="submit">JoinRoom</button>
+            </form>
             </div>
         </div>
 
@@ -42,14 +38,9 @@
                         notLogin: true,
                         joined: false,
                         roomid: null,
-                        socket: null,
-                        chatContext: null
                     }
                 },
                 methods: {
-                    chat: function(){
-                        this.socket.emit('message', {msg:this.chatContext})
-                    },
                     login: function(){
                         var self = this
                         axios.post('/login',{
@@ -60,13 +51,6 @@
                             self.password = null
                             self.notLogin = false
                             self.joined = true
-                            self.socket = io.connect('http://' + document.domain + ':' + location.port + '/game')
-                            self.socket.on('status', function(data){
-                                console.log(data)
-                            })
-                            self.socket.on('message', function(data){
-                                console.log(data)
-                            })
                             console.log(response.data)
                         })
                         .catch(function(error){
@@ -84,32 +68,6 @@
                             console.log(response.data)
                         })
                     },
-                    createRoom: function(){
-                        var self = this
-                        axios.get('/createRoom')
-                        .then(function(response){
-                            self.joined = false
-                            self.socket.emit('joined', {})
-                            console.log(response.data)
-                        })
-                    },
-                    joinRoom: function(){
-                        var self = this
-                        axios.get('/joinRoom',{params:{roomid:self.roomid}})
-                        .then(function(response){
-                            self.socket.emit('joined', {})
-                            self.joined = false
-                            console.log(response.data)
-                        })
-                        .catch(function(error){
-                            console.log(error)
-                            console.log('join error:')
-                        })
-                    },
-                    mounted: function(){
-                        console.log('mounted')
-                        axios.defaults.withCredentials = true
-                    }
                 }
             })
         </script>

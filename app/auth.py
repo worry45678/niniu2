@@ -8,7 +8,7 @@ auth = Blueprint('auth', __name__)
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method=='POST':
-        data = json.loads(request.data)
+        data = json.loads(request.data.decode())
         user = User.query.filter_by(name=data.get('username')).first()
         if user is not None and user.verify_password(data.get('password')):
             login_user(user)

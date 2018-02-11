@@ -5,12 +5,11 @@ from .models import Room
 from . import db
 import json
 
-
 main = Blueprint('main', __name__)
 
 @main.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index2.html')
 
 @main.route('/createRoom')
 def createRoom():
@@ -18,17 +17,21 @@ def createRoom():
     db.session.add(room)
     db.session.commit()
     session['room'] = room.id
-    return json.dumps(room.id)
+    return redirect(url_for('.room'))
 
-@main.route('/joinRoom')
+@main.route('/joinRoom',methods=['POST'])
 def joinRoom():
-    if Room.query.filter_by(id=request.args.get('roomid')).first():
-        room = Room.query.filter_by(id=request.args.get('roomid')).first()
+    if Room.query.filter_by(id=request.form.get('room')).first():
+        room = Room.query.filter_by(id=request.form.get('room')).first()
         session['room'] = room.id
-        if room.userpos(current_user) == 0 and room.count < 5:
+        if room.userpos(current_user) == 0 and room.count() < 5:
             room.join(current_user)
         db.session.add(room)
         db.session.commit()
-        return 'joinroom'
+        return redirect(url_for('.room'))
     else:
-        return 'join failed'
+        return 'join failed',409
+
+@main.route('/room')
+def room():
+    return render_template('room.html')
