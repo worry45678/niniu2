@@ -8,7 +8,8 @@ from datetime import datetime
 def joined(message):
     room = session.get('room')
     join_room(room)
-    emit('status', {'user': current_user.name,'room':room,'action':'join','time':datetime.utcnow().strftime('%Y-%d-%m %H:%M:%S'),'seat':session['seat']}, room=room)
+    emit('action', {'user': current_user.name, 'action':'join', 'error':'ok', 'content':session['seat'], 'time':datetime.utcnow().strftime('%Y-%d-%m %H:%M:%S')}, room=room)
+
 
 @socketio.on('message', namespace='/game')
 def mess(message):
@@ -18,4 +19,6 @@ def mess(message):
 @socketio.on('action', namespace='/game')
 def action(message):
     room = session.get('room')
-    emit('action', {'user': current_user.name,'room':room,'action':message['action'],'time':datetime.utcnow().strftime('%Y-%d-%m %H:%M:%S')}, room=room)
+    print(message)
+    re = {'user': current_user.name,'seat':session['seat'], 'action':message['action'], 'error':'ok', 'content':message['content'], 'time':datetime.utcnow().strftime('%Y-%d-%m %H:%M:%S')}
+    emit('action', re, room=room)

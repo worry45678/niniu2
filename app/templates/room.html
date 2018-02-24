@@ -24,26 +24,26 @@
                 </div>
             </div>
 
-            <div id="player1">
-                <comp-player ref="player1" :player-name="status.users[(status.seat-1)%4]"></comp-player>
+            <div id="player1" v-if="status.users[(status.seat-1)%4]">
+                <comp-player ref="player1" :player="status.users[(status.seat-1)%4]"></comp-player>
             </div>
-            <div id="player2">
-                <comp-player ref="player2" :player-name="status.users[(0+status.seat)%4]"></comp-player>
+            <div id="player2" v-if="status.users[(0+status.seat)%4]">
+                <comp-player ref="player2" :player="status.users[(0+status.seat)%4]"></comp-player>
             </div>
-            <div id="player3">
-                <comp-player ref="player3" :player-name="status.users[(1+status.seat)%4]"></comp-player>
+            <div id="player3" v-if="status.users[(1+status.seat)%4]">
+                <comp-player ref="player3" :player="status.users[(1+status.seat)%4]"></comp-player>
             </div>
-            <div id="player4">
-                <comp-player ref="player4" :player-name="status.users[(2+status.seat)%4]"></comp-player>
+            <div id="player4" v-if="status.users[(2+status.seat)%4]">
+                <comp-player ref="player4" :player="status.users[(2+status.seat)%4]"></comp-player>
             </div>
         </div>
 
 
         <template id="player">
             <div>
-                <p>玩家：[[ playerName ]]得分：[[ mark ]]</p>
+                <p>玩家：[[ player.name ]]得分：[[ player.mark ]] <span>状态：[[ player.status ]]</span> </p>
                 <hr>
-                <div class="card" v-for="(item,index) in myPai" :style="{left:index*24+'px',color:$parent.YANSE[item.slice(0,-2)]}" >
+                <div class="card" v-for="(item,index) in player.pai" :style="{left:index*24+'px',color:$parent.YANSE[item.slice(0,-2)]}" >
                     <div class="corner top">
                       <span class="number">[[ $parent.NUMBER[item.slice(-2)*1] ]]</span>
                       <span>[[ $parent.HUASE[item.slice(0,-2)] ]]</span>
@@ -65,6 +65,7 @@
                 data: function() {
                     return {
                         user: '{{ user }}',
+                        room: '{{ room }}',
                         socket: null,
                         chatContext: null,
                         status: {
@@ -102,17 +103,17 @@
                 },
                 methods: {
                     chat: function(){
-                        this.socket.emit('message', {msg:this.chatContext})
+                        this.socket.emit('action', {action:'chat',content:this.chatContext})
                     },
                     action: function(act){
-                        this.socket.emit('action', {action:act})
+                        this.socket.emit('action', {action:act,content:'test content'})
                     }
                 },
                 components: {
                     'comp-player': {
                         template: '#player',
                         delimiters: ["[[", "]]"],
-                        props: ["playerName", "myPai", "mark"],
+                        props: ["player", "myPai", "mark"],
                         data: function (){
                             return {
 
@@ -133,10 +134,37 @@
                         console.log(data)
                     })
                     this.socket.on('action', function(data){
+                        // 响应服务器消息处理函数
+                        switch (data.action){
+                            case 'join':{
+                                console.log('join------------')
+                                // 发送消息，让其它玩家发送自己的当前状态
+                                self.socket.emit('action',{action:'status', content:self.$refs.player1.status}) 
+                                break
+                            };
+                            case 'ready':{
+                                console.log('ready-----------')
+                                self.status.users[data.seat-1].status = 'ready'
+                                break
+                            };
+                            case 'chat':{
+                                console.log('chat------------')
+                                break
+                            };
+                            case 'status':{
+                                console.log('status-----------')
+                                break
+                            }
+
+                        }
                         console.log(data)
                     })
                     axios.get('./status').then(function(response){
-                        self.status = JSON.parse(response.data)
+                        var data = JSON.parse(response.data)
+                        for (i in data.users){
+                            data.users[i] = {name:data.users[i], status:'wait', pai:[], mark:0}
+                        }
+                        self.status = data
                     })
                 }
             })

@@ -38,7 +38,10 @@ def joinRoom():
 
 @main.route('/room')
 def room():
-    return render_template('room.html', user=current_user.name)
+    if session.get('room'):
+        return render_template('room.html', user=current_user.name, room=session['room'])
+    else:
+        return redirect(url_for('.index'))
 
 @main.route('/status')
 def status():
