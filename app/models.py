@@ -168,20 +168,9 @@ class Room(db.Model):
         user3 = self.user3.name if self.user3 else None
         user4 = self.user4.name if self.user4 else None
         user5 = self.user5.name if self.user5 else None
-        p = {0:-1,1:0,2:1,4:2,8:3,16:4}
-        if self.paijus.filter_by(finish=0).first():
-            running_paiju = self.paijus.filter_by(finish=0).first()
-            paijustatus = running_paiju.status
-            zhuang = p[running_paiju.zhuang]
-            ready = running_paiju.ready
-        else:
-            paijustatus = -1
-            zhuang = -1
-            ready = -1
-        userpos = math.log(self.userpos(current_user))/math.log(2)
 
-        return '''{"id": %d,"createtime":"%s","confirm":%d,"users":["%s","%s","%s","%s","%s"],"end":"%s","count":%d,"zhuang":%d,"roomstatus":"%s","paijustatus":"%s","ready":"%s","userpos":"%s"}''' \
-                %(self.id,self.createtime,self.confirm, user1, user2, user3, user4, user5, self.end, self.count(), zhuang, self.status, paijustatus, ready, userpos) 
+        return '''{"id": %d,"createtime":"%s","users":["%s","%s","%s","%s","%s"],"count":%d,"roomstatus":"%s","seat":%d}''' \
+                %(self.id,self.createtime, user1, user2, user3, user4, user5, self.count(), self.status, self.userpos(current_user)) 
 
 class Paiju(db.Model):
     __table__name = 'paiju'

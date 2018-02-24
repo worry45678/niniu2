@@ -17,7 +17,7 @@ p {
     background: -moz-radial-gradient(rgb(16, 173, 1), rgb(6, 110, 6), rgb(3, 82, 3)); /* Firefox 3.6 - 15 */
     background: radial-gradient(rgb(14, 150, 2), rgb(6, 110, 6), rgb(3, 61, 3)); /* 标准的语法（必须放在最后） */
 }
-#test {
+#game {
     width: 40%;
     position: absolute;
     left: 0px;

@@ -23,21 +23,20 @@
                     <button>Leave</button>
                 </div>
             </div>
-
-            <div id="player1">
-                <comp-player ref="player1" :player-name="status.users[(status.seat-1)%4]"></comp-player>
-            </div>
-            <div id="player2">
-                <comp-player ref="player2" :player-name="status.users[(0+status.seat)%4]"></comp-player>
-            </div>
-            <div id="player3">
-                <comp-player ref="player3" :player-name="status.users[(1+status.seat)%4]"></comp-player>
-            </div>
-            <div id="player4">
-                <comp-player ref="player4" :player-name="status.users[(2+status.seat)%4]"></comp-player>
-            </div>
         </div>
-
+        <comp-test></comp-test>
+        <div id="player1">
+            <comp-player ref="player1" :player-name="status.data[0]" :my-pai="pai[0]" :mark="marks[0]"></comp-player>
+        </div>
+        <div id="player2">
+            <comp-player ref="player2" :player-name="status.data[1]" :my-pai="pai[1]" :mark="marks[1]"></comp-player>
+        </div>
+        <div id="player3">
+            <comp-player ref="player3" :player-name="status.data[2]" :my-pai="pai[2]" :mark="marks[2]"></comp-player>
+        </div>
+        <div id="player4">
+            <comp-player ref="player4" :player-name="status.data[3]" :my-pai="pai[3]" :mark="marks[3]"></comp-player>
+        </div>
 
         <template id="player">
             <div>
@@ -58,18 +57,21 @@
             </div>
         </template>
 
+        <template id="test">
+            <div>
+                <h1>hello,test</h1>
+            </div>
+        </template>
+
         <script>
             var vm = new Vue({
                 el: '#app',
                 delimiters: ["[[", "]]"],
                 data: function() {
                     return {
-                        user: '{{ user }}',
                         socket: null,
                         chatContext: null,
-                        status: {
-                            users:[]
-                        },
+                        status: null,
                         seat: null,
                         HUASE: {
                         'hongt': '♥',
@@ -113,32 +115,22 @@
                         template: '#player',
                         delimiters: ["[[", "]]"],
                         props: ["playerName", "myPai", "mark"],
-                        data: function (){
+                        data (){
+                            return {
+
+                            }
+                        }
+                    },
+                    'comp-test': {
+                        template: '#test',
+                        data(){
                             return {
 
                             }
                         }
                     }
                 },
-                
-                mounted: function(){
-                    var self = this
-                    console.log('mounted')
-                    this.socket = io.connect('http://' + document.domain + ':' + location.port + '/game')
-                    this.socket.emit('joined',{})
-                    this.socket.on('status', function(data){
-                        console.log(data)
-                    })
-                    this.socket.on('message', function(data){
-                        console.log(data)
-                    })
-                    this.socket.on('action', function(data){
-                        console.log(data)
-                    })
-                    axios.get('./status').then(function(response){
-                        self.status = JSON.parse(response.data)
-                    })
-                }
+               
             })
         </script>
     </body>

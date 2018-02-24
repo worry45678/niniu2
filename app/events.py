@@ -8,14 +8,14 @@ from datetime import datetime
 def joined(message):
     room = session.get('room')
     join_room(room)
-    emit('status', {'user': current_user.name,'room':room,'action':'join','time':datetime.utcnow().strftime('%Y-%d-%m %H:%M:%S')}, room=room)
+    emit('status', {'user': current_user.name,'room':room,'action':'join','time':datetime.utcnow().strftime('%Y-%d-%m %H:%M:%S'),'seat':session['seat']}, room=room)
 
 @socketio.on('message', namespace='/game')
 def mess(message):
     room = session.get('room')
-    emit('message', {'user': current_user.name,'msg':message['msg'], 'room':room,'action':'*action*','time':datetime.utcnow().strftime('%Y-%d-%m %H:%M:%S')}, room=room)
+    emit('message', {'user': current_user.name,'msg':message['msg'], 'room':room,'time':datetime.utcnow().strftime('%Y-%d-%m %H:%M:%S')}, room=room)
 
 @socketio.on('action', namespace='/game')
 def action(message):
     room = session.get('room')
-    emit('action', {'user': current_user.name,'room':room,'action':'*action*','time':datetime.utcnow().strftime('%Y-%d-%m %H:%M:%S')}, room=room)
+    emit('action', {'user': current_user.name,'room':room,'action':message['action'],'time':datetime.utcnow().strftime('%Y-%d-%m %H:%M:%S')}, room=room)
