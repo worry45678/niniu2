@@ -110,7 +110,20 @@
                         this.socket.emit('action', {action:'chat',content:this.chatContext})
                     },
                     action: function(act){
-                        this.socket.emit('action', {action:act,content:'test content'})
+                        this.socket.emit('action', {action:act,content:'ready'})
+                    },
+                    checkDone: function(what){
+                        // 检查是否所有玩家都处于what状态
+                        for (i of this.status.users){
+                            if(i.status !== null){
+                                if(i.status!==what){
+                                    console.log(i.name)
+                                    return false
+                                }
+                            }
+                        }
+                        return true
+
                     }
                 },
                 components: {
@@ -151,6 +164,12 @@
                             case 'ready':{
                                 console.log('ready-----------')
                                 self.status.users[data.seat-1].status = 'ready'
+                                // 如果所有人都已准备，获取各自的牌
+                                if (self.checkDone('ready')){
+                                    self.socket.emit('action',{action:'fapai',content:'fapai'})
+                                    console.log('huoqu poker')
+
+                                }
                                 break
                             };
                             case 'chat':{
@@ -170,7 +189,12 @@
                     axios.get('./status').then(function(response){
                         var data = JSON.parse(response.data)
                         for (i in data.users){
-                            data.users[i] = {name:data.users[i], status:'wait', pai:[], mark:0}
+                            if(data.users[i]==='None'){
+                                data.users[i] = {name:data.users[i], status:null, pai:[], mark:0}
+                            }else{
+                                data.users[i] = {name:data.users[i], status:'wait', pai:[], mark:0}
+                            }
+                            
                         }
                         self.status = data
                     })

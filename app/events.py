@@ -19,6 +19,8 @@ def mess(message):
 @socketio.on('action', namespace='/game')
 def action(message):
     room = session.get('room')
-    print(message)
+    if message['action'] == 'fapai':
+        print('fapai')
+
     re = {'user': current_user.name,'seat':session['seat'], 'action':message['action'], 'error':'ok', 'content':message['content'], 'time':datetime.utcnow().strftime('%Y-%d-%m %H:%M:%S')}
     emit('action', re, room=room)
