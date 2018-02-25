@@ -8,7 +8,7 @@ from datetime import datetime
 def joined(message):
     room = session.get('room')
     join_room(room)
-    emit('action', {'user': current_user.name, 'action':'join', 'error':'ok', 'content':session['seat'], 'time':datetime.utcnow().strftime('%Y-%d-%m %H:%M:%S')}, room=room)
+    emit('action', {'user': current_user.name, 'seat':session['seat'], 'action':'join', 'error':'ok', 'content':None, 'time':datetime.utcnow().strftime('%Y-%d-%m %H:%M:%S')}, room=room)
 
 
 @socketio.on('message', namespace='/game')

@@ -14,6 +14,10 @@
     <body>
         <div id="app">
             <div id="game">
+                <div id="info">
+                    <p>[[ room ]]</p>
+                    <p><span>chat:</span>[[ chatList ]]</p>
+                </div>
                 <div id="testChat">
                     <input type="text" v-model="chatContext">
                     <button @click="chat">Chat</button>
@@ -68,10 +72,10 @@
                         room: '{{ room }}',
                         socket: null,
                         chatContext: null,
+                        chatList: [],
                         status: {
                             users:[]
                         },
-                        seat: null,
                         HUASE: {
                         'hongt': '♥',
                         'heit': '♠',
@@ -138,8 +142,10 @@
                         switch (data.action){
                             case 'join':{
                                 console.log('join------------')
+                                // 将该玩家放到content对应的座位上
+                                self.status.users[data.seat-1].name = data.user
                                 // 发送消息，让其它玩家发送自己的当前状态
-                                self.socket.emit('action',{action:'status', content:self.$refs.player1.status}) 
+                                self.socket.emit('action',{action:'status', content:self.$refs.player1.player.status}) 
                                 break
                             };
                             case 'ready':{
@@ -149,10 +155,12 @@
                             };
                             case 'chat':{
                                 console.log('chat------------')
+                                self.chatList.push(data.content)
                                 break
                             };
                             case 'status':{
                                 console.log('status-----------')
+                                self.status.users[data.seat-1].status = data.content
                                 break
                             }
 
