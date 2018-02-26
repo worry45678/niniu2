@@ -167,14 +167,21 @@
                                 // 如果所有人都已准备，获取各自的牌
                                 if (self.checkDone('ready')){
                                     self.socket.emit('action',{action:'fapai',content:'fapai'})
-                                    console.log('huoqu poker')
-
                                 }
                                 break
                             };
                             case 'chat':{
                                 console.log('chat------------')
                                 self.chatList.push(data.content)
+                                break
+                            };
+                            case 'fapai':{
+                                for (i in self.status.users){
+                                    self.status.users[i].pai = ['back','back','back','back','back']
+                                }
+                                self.status.users[self.status.seat-1].pai = data.content
+                                self.status.users[self.status.seat-1].pai[4] = 'back'
+
                                 break
                             };
                             case 'status':{

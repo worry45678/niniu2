@@ -4,7 +4,17 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, AnonymousUserMixin
 from . import login_manger
 from datetime import datetime
-import math, random
+import math, random, json
+
+PUKE = ['fangp01', 'fangp02', 'fangp03', 'fangp04', 'fangp05', 'fangp06', 'fangp07', 'fangp08', 'fangp09', 'fangp10',
+'fangp11', 'fangp12', 'fangp13', 'hongt01', 'hongt02', 'hongt03', 'hongt04', 'hongt05', 'hongt06', 'hongt07', 'hongt08',
+'hongt09', 'hongt10', 'hongt11', 'hongt12', 'hongt13', 'heit01', 'heit02', 'heit03', 'heit04', 'heit05', 'heit06', 'heit07',
+'heit08', 'heit09', 'heit10', 'heit11', 'heit12', 'heit13', 'meih01', 'meih02', 'meih03', 'meih04', 'meih05', 'meih06',
+'meih07', 'meih08', 'meih09', 'meih10', 'meih11', 'meih12', 'meih13']
+
+HUASE_NUMBER= {'heit':0.4,'hongt':0.3,'meih':0.2,'fangp':0.1}
+
+BEI_LV = {0:1,1:1,2:1,3:1,4:1,5:1,6:1,7:1,8:2,9:2,10:3}
 
 class User(UserMixin, db.Model):
     __tablename__ = "User"
@@ -194,6 +204,16 @@ class Paiju(db.Model):
     user4_mark = db.Column(db.Integer, default=0)
     user5_mark = db.Column(db.Integer, default=0)
     status = db.Column('status', db.Text, default='ready')
+
+    @staticmethod
+    def generate_paiju(room):
+        new_puke = PUKE.copy()
+        for i in range(20):
+            random.shuffle(new_puke)
+            r = [new_puke[0:5],new_puke[5:10],new_puke[10:15],new_puke[15:20],new_puke[20:25]]
+            new_paiju = Paiju(room_id=room, paixu=json.dumps(r))
+            db.session.add(new_paiju)
+            db.session.commit()
     
     def marks(self):
         return '''{"id":%d,"marks":["%d","%d","%d","%d","%d"]}'''\
