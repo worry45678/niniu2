@@ -32,8 +32,11 @@
                 </div>
                 <div id="xiazhu">
                         <button type="button" @click="xiazhu(1)">1倍</button>
-                        <button type="button" @click="qiangzhuang(2)">2倍</button>
-                        <button type="button" @click="qiangzhuang(3)">3倍</button>
+                        <button type="button" @click="xiazhu(2)">2倍</button>
+                        <button type="button" @click="xiazhu(3)">3倍</button>
+                </div>
+                <div id="show">
+                    <button @click="show">亮牌</button>
                 </div>
             </div>
 
@@ -54,7 +57,7 @@
 
         <template id="player">
             <div>
-                <p>玩家：[[ player.name ]]得分：[[ player.mark ]] <span>状态：[[ player.status ]]</span> </p>
+                <p>玩家：[[ player.name ]]得分：[[ player.mark ]] <span>状态：[[ player.status ]]</span><span v-if="player.zhuang===2">庄</span> </p>
                 <hr>
                 <div class="card" v-for="(item,index) in player.pai" :style="{left:index*24+'px',color:$parent.YANSE[item.slice(0,-2)]}" >
                     <div v-if="item!=='back'">
@@ -86,6 +89,7 @@
                         socket: null,
                         chatContext: null,
                         chatList: [],
+                        step: 'start',
                         status: {
                             users:[]
                         },
@@ -134,6 +138,13 @@
                             this.socket.emit('action', {action:'qiangzhuang',content:qiang})
                         }
                     },
+                    xiazhu: function(zhu){
+                        this.socket.emit('action', {action:'xiazhu', content:zhu})
+                    },
+                    show: function(){
+                        // 亮牌，发送自己的牌面给所有玩家，非服务器数据
+                        this.socket.emit('action', {action:'show', content:this.$refs.player1.player.pai})
+                    },
                     checkDone: function(what){
                         // 检查是否所有玩家都处于what状态
                         for (i of this.status.users){
@@ -145,7 +156,6 @@
                             }
                         }
                         return true
-
                     }
                 },
                 components: {
@@ -215,6 +225,22 @@
                                 self.status.users[data.seat-1].status = 'qiangzhuang'
                                 self.status.users[data.seat-1].zhuang = data.content[0]
                                 self.status.users[data.content[1] - 1].zhuang = 2
+                                break
+                            };
+                            case 'xiazhu':{
+                                self.status.users[data.seat-1].zhu = data.content
+                                self.status.users[data.seat-1].status = 'xiazhu'
+                                if (self.checkDone('xiazhu')){
+                                    self.socket.emit('action',{action:'fapai2',content:'fapai2'})
+                                }
+                                break
+                            };
+                            case 'fapai2':{
+                                self.status.users[self.status.seat-1].pai[4] = data.content
+                                break
+                            };
+                            case 'show':{
+                                self.status.users[data.seat-1].pai = data.content
                                 break
                             }
                             case 'status':{

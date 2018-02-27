@@ -4,7 +4,7 @@ from flask_login import current_user
 from . import socketio, db
 from datetime import datetime
 import json, random, math
-from .models import Room, Paiju
+from .models import Room, Paiju, calcmark
 
 @socketio.on('joined', namespace='/game')
 def joined(message):
@@ -49,6 +49,26 @@ def action(message):
         db.session.add(paiju)
         db.session.commit()
         re = {'user': current_user.name,'seat':session['seat'], 'action':'choicezhuang', 'error':'ok', 'content':[message['content'],paiju.zhuang], 'time':datetime.utcnow().strftime('%Y-%d-%m %H:%M:%S')}
+        emit('action', re, room=room.id)
+    elif message['action'] == 'xiazhu':
+        paiju = Paiju.query.filter_by(room_id=room.id).filter_by(finish=0).first()
+        paiju.xiazhu(session['seat'],message['content'])
+        re = {'user': current_user.name,'seat':session['seat'], 'action':message['action'], 'error':'ok', 'content': message['content'], 'time':datetime.utcnow().strftime('%Y-%d-%m %H:%M:%S')}
+        emit('action',re,room=room.id)
+    elif message['action'] == 'fapai2':
+        # 完整发牌，应加入验证是否所有人都已经下注的验证
+        paiju = Paiju.query.filter_by(room_id=room.id).filter_by(finish=0).first()
+        if paiju.checkxiazhu and paiju.status != 'show':
+            calcmark(paiju)
+            print('calc--------------------------------')
+            paiju.status = 'show'
+            db.session.add(paiju)
+            db.session.commit()
+        pai = json.loads(paiju.paixu)
+        re = {'user': current_user.name,'seat':session['seat'], 'action':message['action'], 'error':'ok', 'content':pai[session['seat']-1][4], 'time':datetime.utcnow().strftime('%Y-%d-%m %H:%M:%S')}
+        emit('action', re)
+    elif message['action'] == 'show':
+        re = {'user': current_user.name,'seat':session['seat'], 'action':message['action'], 'error':'ok', 'content':message['content'], 'time':datetime.utcnow().strftime('%Y-%d-%m %H:%M:%S')}
         emit('action', re, room=room.id)
     else:
         re = {'user': current_user.name,'seat':session['seat'], 'action':message['action'], 'error':'ok', 'content':message['content'], 'time':datetime.utcnow().strftime('%Y-%d-%m %H:%M:%S')}

@@ -6,3 +6,4 @@
 2. 接口设计，`{action:"action", user:"user", content:"content", error:"ok", time:"time"}`
 3. 前端用户设计，`{name:"username", staus:"ready|leave|wait", pai:"poker", mark:"mark"}`
 4. 扑克背面设计，back
+5. 牌局进行状态的保存和改变
