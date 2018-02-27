@@ -23,8 +23,17 @@
                     <button @click="chat">Chat</button>
                 </div>
                 <div id="ready">
-                    <button type="button" @click="action('ready')">Ready</button>
+                    <button type="button" @click="ready">Ready</button>
                     <button>Leave</button>
+                </div>
+                <div id="qiangzhuang">
+                    <button type="button" @click="qiangzhuang(1)">抢庄</button>
+                    <button type="button" @click="qiangzhuang(0)">不抢</button>
+                </div>
+                <div id="xiazhu">
+                        <button type="button" @click="xiazhu(1)">1倍</button>
+                        <button type="button" @click="qiangzhuang(2)">2倍</button>
+                        <button type="button" @click="qiangzhuang(3)">3倍</button>
                 </div>
             </div>
 
@@ -48,6 +57,7 @@
                 <p>玩家：[[ player.name ]]得分：[[ player.mark ]] <span>状态：[[ player.status ]]</span> </p>
                 <hr>
                 <div class="card" v-for="(item,index) in player.pai" :style="{left:index*24+'px',color:$parent.YANSE[item.slice(0,-2)]}" >
+                    <div v-if="item!=='back'">
                     <div class="corner top">
                       <span class="number">[[ $parent.NUMBER[item.slice(-2)*1] ]]</span>
                       <span>[[ $parent.HUASE[item.slice(0,-2)] ]]</span>
@@ -57,6 +67,9 @@
                       <span class="number">[[ $parent.NUMBER[item.slice(-2)*1] ]]</span>
                       <span>[[ $parent.HUASE[item.slice(0,-2)] ]]</span>
                     </div>
+                </div>
+                <div v-else id="back">
+                </div>
                 </div>
                 
             </div>
@@ -109,8 +122,17 @@
                     chat: function(){
                         this.socket.emit('action', {action:'chat',content:this.chatContext})
                     },
-                    action: function(act){
-                        this.socket.emit('action', {action:act,content:'ready'})
+                    ready: function(){
+                        this.socket.emit('action', {action:'ready',content:'ready'})
+                    },
+                    qiangzhuang: function(qiang){
+                        // 如果所有人都已选择好，发送完成抢庄数据，emit服务器进行选择庄家的操作
+                        this.status.users[this.status.seat - 1].status = 'qiangzhuang'
+                        if (this.checkDone('qiangzhuang')){
+                            this.socket.emit('action', {action:'choicezhuang',content:qiang})
+                        } else {
+                            this.socket.emit('action', {action:'qiangzhuang',content:qiang})
+                        }
                     },
                     checkDone: function(what){
                         // 检查是否所有玩家都处于what状态
@@ -184,6 +206,17 @@
 
                                 break
                             };
+                            case 'qiangzhuang':{
+                                self.status.users[data.seat-1].status = 'qiangzhuang'
+                                self.status.users[data.seat-1].zhuang = data.content
+                                break
+                            };
+                            case 'choicezhuang':{
+                                self.status.users[data.seat-1].status = 'qiangzhuang'
+                                self.status.users[data.seat-1].zhuang = data.content[0]
+                                self.status.users[data.content[1] - 1].zhuang = 2
+                                break
+                            }
                             case 'status':{
                                 console.log('status-----------')
                                 self.status.users[data.seat-1].status = data.content
@@ -197,9 +230,9 @@
                         var data = JSON.parse(response.data)
                         for (i in data.users){
                             if(data.users[i]==='None'){
-                                data.users[i] = {name:data.users[i], status:null, pai:[], mark:0}
+                                data.users[i] = {name:data.users[i], status:null, pai:[], mark:0,zhuang:0,xiazhu:0}
                             }else{
-                                data.users[i] = {name:data.users[i], status:'wait', pai:[], mark:0}
+                                data.users[i] = {name:data.users[i], status:'wait', pai:[], mark:0,zhuang:0,xiazhu:0}
                             }
                             
                         }
