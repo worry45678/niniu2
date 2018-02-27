@@ -7,5 +7,4 @@ __pycache__
 .idea
 .vscode
 app/main/__pycache__/
-app/test.db
 .pyc
