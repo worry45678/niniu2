@@ -70,6 +70,14 @@ def action(message):
     elif message['action'] == 'show':
         re = {'user': current_user.name,'seat':session['seat'], 'action':message['action'], 'error':'ok', 'content':message['content'], 'time':datetime.utcnow().strftime('%Y-%d-%m %H:%M:%S')}
         emit('action', re, room=room.id)
+    elif message['action'] == 'finish':
+        # 可以考虑加入对牌局的验证
+        paiju = Paiju.query.filter_by(room_id=room.id).filter_by(finish=0).first()
+        re = {'user': current_user.name,'seat':session['seat'], 'action':message['action'], 'error':'ok', 'content':message['content'],'marks':paiju.marks(), 'time':datetime.utcnow().strftime('%Y-%d-%m %H:%M:%S')}
+        paiju.finish = 1
+        db.session.add(paiju)
+        db.session.commit()
+        emit('action', re, room=room.id)
     else:
         re = {'user': current_user.name,'seat':session['seat'], 'action':message['action'], 'error':'ok', 'content':message['content'], 'time':datetime.utcnow().strftime('%Y-%d-%m %H:%M:%S')}
         emit('action', re, room=room.id)

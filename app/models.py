@@ -304,8 +304,10 @@ class Paiju(db.Model):
             return True
     
     def marks(self):
-        return '''{"id":%d,"marks":["%d","%d","%d","%d","%d"]}'''\
-                %(self.id, self.user1_mark, self.user2_mark, self.user3_mark, self.user4_mark, self.user5_mark)
+        #return '''{"id":%d,"marks":["%d","%d","%d","%d","%d"]}'''\
+        #        %(self.id, self.user1_mark, self.user2_mark, self.user3_mark, self.user4_mark, self.user5_mark)
+        return [self.user1_mark, self.user2_mark, self.user3_mark, self.user4_mark, self.user5_mark]
+
 
 login_manger.anonymous_user = AnonymousUser
 

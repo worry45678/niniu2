@@ -22,20 +22,20 @@
                     <input type="text" v-model="chatContext">
                     <button @click="chat">Chat</button>
                 </div>
-                <div id="ready">
+                <div id="ready" v-if="step=='ready' && waitAction">
                     <button type="button" @click="ready">Ready</button>
                     <button>Leave</button>
                 </div>
-                <div id="qiangzhuang">
+                <div id="qiangzhuang" v-if="step=='qiangzhuang' && waitAction">
                     <button type="button" @click="qiangzhuang(1)">抢庄</button>
                     <button type="button" @click="qiangzhuang(0)">不抢</button>
                 </div>
-                <div id="xiazhu">
+                <div id="xiazhu" v-if="step=='xiazhu' && waitAction">
                         <button type="button" @click="xiazhu(1)">1倍</button>
                         <button type="button" @click="xiazhu(2)">2倍</button>
                         <button type="button" @click="xiazhu(3)">3倍</button>
                 </div>
-                <div id="show">
+                <div id="show" v-if="step=='show' && waitAction">
                     <button @click="show">亮牌</button>
                 </div>
             </div>
@@ -89,7 +89,8 @@
                         socket: null,
                         chatContext: null,
                         chatList: [],
-                        step: 'start',
+                        step: 'ready',
+                        waitAction:true,
                         status: {
                             users:[]
                         },
@@ -127,9 +128,11 @@
                         this.socket.emit('action', {action:'chat',content:this.chatContext})
                     },
                     ready: function(){
+                        this.waitAction = false
                         this.socket.emit('action', {action:'ready',content:'ready'})
                     },
                     qiangzhuang: function(qiang){
+                        this.waitAction = false
                         // 如果所有人都已选择好，发送完成抢庄数据，emit服务器进行选择庄家的操作
                         this.status.users[this.status.seat - 1].status = 'qiangzhuang'
                         if (this.checkDone('qiangzhuang')){
@@ -139,11 +142,18 @@
                         }
                     },
                     xiazhu: function(zhu){
+                        this.waitAction = false
                         this.socket.emit('action', {action:'xiazhu', content:zhu})
                     },
                     show: function(){
-                        // 亮牌，发送自己的牌面给所有玩家，非服务器数据
-                        this.socket.emit('action', {action:'show', content:this.$refs.player1.player.pai})
+                        this.waitAction = false
+                        // 亮牌，发送自己的牌面给所有玩家，非服务器数据,如果所有人都已亮牌，发送finish，完成本局
+                        this.status.users[this.status.seat-1].status = 'show'
+                        if (this.checkDone('show')){
+                            this.socket.emit('action', {action:'finish', content:this.$refs.player1.player.pai})
+                        } else {
+                            this.socket.emit('action', {action:'show', content:this.$refs.player1.player.pai})
+                        }
                     },
                     checkDone: function(what){
                         // 检查是否所有玩家都处于what状态
@@ -211,6 +221,8 @@
                                 for (i in self.status.users){
                                     self.status.users[i].pai = ['back','back','back','back','back']
                                 }
+                                self.step = 'qiangzhuang'
+                                self.waitAction = true
                                 self.status.users[self.status.seat-1].pai = data.content
                                 self.status.users[self.status.seat-1].pai[4] = 'back'
 
@@ -223,6 +235,8 @@
                             };
                             case 'choicezhuang':{
                                 self.status.users[data.seat-1].status = 'qiangzhuang'
+                                self.step = 'xiazhu'
+                                self.waitAction = true
                                 self.status.users[data.seat-1].zhuang = data.content[0]
                                 self.status.users[data.content[1] - 1].zhuang = 2
                                 break
@@ -231,6 +245,8 @@
                                 self.status.users[data.seat-1].zhu = data.content
                                 self.status.users[data.seat-1].status = 'xiazhu'
                                 if (self.checkDone('xiazhu')){
+                                    self.step = 'show'
+                                    self.waitAction = true
                                     self.socket.emit('action',{action:'fapai2',content:'fapai2'})
                                 }
                                 break
@@ -240,6 +256,17 @@
                                 break
                             };
                             case 'show':{
+                                self.status.users[data.seat-1].status = 'show'
+                                self.status.users[data.seat-1].pai = data.content
+                                break
+                            };
+                            case 'finish':{
+                                self.status.users[data.seat-1].status = 'show'
+                                for (i in self.status.users){
+                                    self.status.users[i].mark = self.status.users[i].mark +  data.marks[i]
+                                }
+                                self.step = 'ready'
+                                self.waitAction = true
                                 self.status.users[data.seat-1].pai = data.content
                                 break
                             }

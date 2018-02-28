@@ -7,3 +7,4 @@
 3. 前端用户设计，`{name:"username", staus:"ready|leave|wait", pai:"poker", mark:"mark"}`
 4. 扑克背面设计，back
 5. 牌局进行状态的保存和改变
+6. 还缺少总牌局计分、结束，结算功能
