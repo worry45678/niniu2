@@ -15,7 +15,7 @@
         <div id="app">
             <div id="game">
                 <div id="info">
-                    <p>[[ room ]]</p>
+                    <p>[[ room ]],rank:[[ status.rank ]]</p>
                     <p><span>chat:</span>[[ chatList ]]</p>
                 </div>
                 <div id="testChat">
@@ -267,9 +267,22 @@
                                 }
                                 self.step = 'ready'
                                 self.waitAction = true
+                                self.status.rank = data.rank
                                 self.status.users[data.seat-1].pai = data.content
                                 break
-                            }
+                            };
+                            case 'end':{
+                                // 房间所有牌局结束处理
+                                self.status.users[data.seat-1].status = 'show'
+                                for (i in self.status.users){
+                                    self.status.users[i].mark = self.status.users[i].mark +  data.marks[i]
+                                }
+                                self.step = 'ready'
+                                self.waitAction = true
+                                self.status.rank = data.rank
+                                self.status.users[data.seat-1].pai = data.content
+                                break
+                            };
                             case 'status':{
                                 console.log('status-----------')
                                 self.status.users[data.seat-1].status = data.content

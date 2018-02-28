@@ -167,7 +167,7 @@ class Room(db.Model):
     __tablename__ = 'room'
     id = db.Column('ID', db.Integer, primary_key=True, autoincrement=True)
     createtime = db.Column(db.DateTime(), default=datetime.utcnow)
-    confirm = db.Column('confirm', db.Integer, default=0)
+    rank = db.Column('rank', db.Integer, default=0)
     user1_id = db.Column(db.Integer, db.ForeignKey('User.ID'))
     user2_id = db.Column(db.Integer, db.ForeignKey('User.ID'))
     user3_id = db.Column(db.Integer, db.ForeignKey('User.ID'))
@@ -239,8 +239,8 @@ class Room(db.Model):
         user4 = self.user4.name if self.user4 else None
         user5 = self.user5.name if self.user5 else None
 
-        return '''{"id": %d,"createtime":"%s","users":["%s","%s","%s","%s","%s"],"count":%d,"roomstatus":"%s","seat":%d}''' \
-                %(self.id,self.createtime, user1, user2, user3, user4, user5, self.count(), self.status, self.userpos(current_user)) 
+        return '''{"id": %d,"createtime":"%s","users":["%s","%s","%s","%s","%s"],"count":%d,"roomstatus":"%s","seat":%d,"rank":%d}''' \
+                %(self.id,self.createtime, user1, user2, user3, user4, user5, self.count(), self.status, self.userpos(current_user), self.rank) 
 
 class Paiju(db.Model):
     __table__name = 'paiju'

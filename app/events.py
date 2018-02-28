@@ -77,6 +77,13 @@ def action(message):
         paiju.finish = 1
         db.session.add(paiju)
         db.session.commit()
+        room.rank = Paiju.query.filter_by(room_id=room.id).filter_by(finish=1).count()
+        if room.rank == 20:
+            re['action'] = 'end'
+            room.end = 1
+        db.session.add(room)
+        db.session.commit()
+        re['rank'] = room.rank + 1
         emit('action', re, room=room.id)
     else:
         re = {'user': current_user.name,'seat':session['seat'], 'action':message['action'], 'error':'ok', 'content':message['content'], 'time':datetime.utcnow().strftime('%Y-%d-%m %H:%M:%S')}
