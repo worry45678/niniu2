@@ -18,6 +18,14 @@ def mess(message):
     room = session.get('room')
     emit('message', {'user': current_user.name,'msg':message['msg'], 'room':room,'time':datetime.utcnow().strftime('%Y-%d-%m %H:%M:%S')}, room=room)
 
+@socketio.on('connect', namespace='/game')
+def connect():
+    print('client connect')
+
+@socketio.on('disconnected', namespace='/game')
+def disconnected(message):
+    print('client diconnected')
+
 @socketio.on('action', namespace='/game')
 def action(message):
     room = Room.query.filter_by(id=session.get('room')).first()
@@ -80,6 +88,7 @@ def action(message):
         room.rank = Paiju.query.filter_by(room_id=room.id).filter_by(finish=1).count()
         if room.rank == 20:
             re['action'] = 'end'
+            re['result'] = json.loads(str(Paiju.query.filter_by(room_id=room.id).all()))
             room.end = 1
         db.session.add(room)
         db.session.commit()

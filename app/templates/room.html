@@ -9,6 +9,7 @@
         <script src="../static/socket.io.min.js"></script>
         <script src="../static/bluebird.min.js"></script>
         <link rel="stylesheet" href="../static/phone.css">
+        <link rel="stylesheet" href="../static/score.css">
     </head>
 
     <body>
@@ -30,13 +31,21 @@
                     <button type="button" @click="qiangzhuang(1)">抢庄</button>
                     <button type="button" @click="qiangzhuang(0)">不抢</button>
                 </div>
-                <div id="xiazhu" v-if="step=='xiazhu' && waitAction">
+                <div id="xiazhu" v-if="step=='xiazhu1' && waitAction && $refs.player1.player.zhuang === 2 ">
                         <button type="button" @click="xiazhu(1)">1倍</button>
                         <button type="button" @click="xiazhu(2)">2倍</button>
                         <button type="button" @click="xiazhu(3)">3倍</button>
                 </div>
+                <div id="xiazhu2" v-if="step=='xiazhu2' && waitAction">
+                    <button type="button" @click="xiazhu(1)">1倍</button>
+                    <button type="button" @click="xiazhu(2)">2倍</button>
+                    <button type="button" @click="xiazhu(3)">3倍</button>
+                </div>
                 <div id="show" v-if="step=='show' && waitAction">
                     <button @click="show">亮牌</button>
+                </div>
+                <div>
+                    <score-board :title="'title'"></score-board>
                 </div>
             </div>
 
@@ -54,7 +63,27 @@
             </div>
         </div>
 
-
+        <template id="scoreboard">
+            <div class="dialogs">
+                <div class="dialog" v-bind:class="{'dialog-active':active }">
+                    <div class="dialog-content">
+                        <header class="dialog-header">
+                            <h1 class="dialog-title">[[ title]]</h1>
+                        </header>
+                        <div>计分表格</div>
+                        <footer class="dialog-footer">
+                            <div class="form-group">
+                                <label></label>
+                                <button @click="save">Save</button>
+                                <button @click="close">Close</button>
+                            </div>
+                        </footer>
+                    </div>
+                </div>
+                <div class="dialog-overlay"></div>
+            </div>
+        </template>
+    
         <template id="player">
             <div>
                 <p>玩家：[[ player.name ]]得分：[[ player.mark ]] <span>状态：[[ player.status ]]</span><span v-if="player.zhuang===2">庄</span> </p>
@@ -178,6 +207,16 @@
 
                             }
                         }
+                    },
+                    'score-board':{
+                        template: '#scoreboard',
+                        delimiters: ["[[", "]]"],
+                        props: ['title', 'score'],
+                        data: function(){
+                            return {
+
+                            }
+                        }
                     }
                 },
                 
@@ -235,7 +274,7 @@
                             };
                             case 'choicezhuang':{
                                 self.status.users[data.seat-1].status = 'qiangzhuang'
-                                self.step = 'xiazhu'
+                                self.step = 'xiazhu1'
                                 self.waitAction = true
                                 self.status.users[data.seat-1].zhuang = data.content[0]
                                 self.status.users[data.content[1] - 1].zhuang = 2
@@ -244,6 +283,7 @@
                             case 'xiazhu':{
                                 self.status.users[data.seat-1].zhu = data.content
                                 self.status.users[data.seat-1].status = 'xiazhu'
+                                self.step = 'xiazhu2'
                                 if (self.checkDone('xiazhu')){
                                     self.step = 'show'
                                     self.waitAction = true
@@ -277,7 +317,7 @@
                                 for (i in self.status.users){
                                     self.status.users[i].mark = self.status.users[i].mark +  data.marks[i]
                                 }
-                                self.step = 'ready'
+                                self.step = 'end'
                                 self.waitAction = true
                                 self.status.rank = data.rank
                                 self.status.users[data.seat-1].pai = data.content
