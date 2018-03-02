@@ -45,7 +45,7 @@
                     <button @click="show">亮牌</button>
                 </div>
                 <div>
-                    <score-board :title="'title'"></score-board>
+                    <score-board :users="status.users" :title="'title'" :active="active"></score-board>
                 </div>
             </div>
 
@@ -71,11 +71,42 @@
                             <h1 class="dialog-title">[[ title]]</h1>
                         </header>
                         <div>计分表格</div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>
+                                        index
+                                    </th>
+                                    <th v-for="(item,index) in users">
+                                        [[ item.name ]]
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(item,index) in $parent.result">
+                                    <td>
+                                        [[ index ]]
+                                    </td>
+                                    <td>
+                                        [[ item.user1 ]]
+                                    </td>
+                                    <td>
+                                        [[ item.user2 ]]
+                                    </td>
+                                    <td>
+                                        [[ item.user3 ]]
+                                    </td>
+                                    <td>
+                                        [[ item.user4 ]]
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
                         <footer class="dialog-footer">
                             <div class="form-group">
                                 <label></label>
-                                <button @click="save">Save</button>
-                                <button @click="close">Close</button>
+                                <button type="button" onClick="location.href='/'">结束游戏</button>
                             </div>
                         </footer>
                     </div>
@@ -120,8 +151,10 @@
                         chatList: [],
                         step: 'ready',
                         waitAction:true,
+                        result:[],
+                        active: false,
                         status: {
-                            users:[]
+                            users:[{'name':'a'},{'name':'b'}]
                         },
                         HUASE: {
                         'hongt': '♥',
@@ -211,9 +244,15 @@
                     'score-board':{
                         template: '#scoreboard',
                         delimiters: ["[[", "]]"],
-                        props: ['title', 'score'],
+                        props: ['title', 'score','active','users'],
                         data: function(){
                             return {
+
+                            }
+                        },
+                        methods:{
+                            end: function(){
+                                this.$parent.active = false
 
                             }
                         }
@@ -318,9 +357,11 @@
                                     self.status.users[i].mark = self.status.users[i].mark +  data.marks[i]
                                 }
                                 self.step = 'end'
+                                self.result = data.result
                                 self.waitAction = true
                                 self.status.rank = data.rank
                                 self.status.users[data.seat-1].pai = data.content
+                                setTimeout(function(){self.active = true},1000)
                                 break
                             };
                             case 'status':{

@@ -17,13 +17,13 @@
                 <input type="text" placeholder="username" v-model="username"> 
                 <input type="text" placeholder="password" v-model="password">
                 <button @click="login" type="button">Login</button>
-                <button @click="logout">Logout</button>
             </div>
-            <div id="createOrJoinRoom" v-if="joined">
+            <div id="createOrJoinRoom" v-if="!notLogin">
                 <button type="button"><a href="./createRoom">CreateRoom</a></button>
                 <form action="./joinRoom" method="POST">
                 <input type="text" placeholder="Room ID" name="room">
                 <button type="submit">JoinRoom</button>
+                <button type="button" @click="logout">Logout</button>
             </form>
             </div>
         </div>
@@ -35,8 +35,7 @@
                     return {
                         username: null,
                         password: null,
-                        notLogin: true,
-                        joined: false,
+                        notLogin: {{ login }},
                         roomid: null,
                     }
                 },
@@ -50,7 +49,6 @@
                         .then(function(response){
                             self.password = null
                             self.notLogin = false
-                            self.joined = true
                             console.log(response.data)
                         })
                         .catch(function(error){
