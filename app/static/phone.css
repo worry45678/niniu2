@@ -17,56 +17,16 @@ p {
     background: -moz-radial-gradient(rgb(16, 173, 1), rgb(6, 110, 6), rgb(3, 82, 3)); /* Firefox 3.6 - 15 */
     background: radial-gradient(rgb(14, 150, 2), rgb(6, 110, 6), rgb(3, 61, 3)); /* 标准的语法（必须放在最后） */
 }
-#game {
-    width: 40%;
-    position: absolute;
-    left: 0px;
-    bottom: 0px;
-    z-index: 100;
-}
+
 #action {
     position: absolute;
-    right: 0px;
-    bottom: 0px;
-    width: 20%;
-    z-index: 100;
-}
-.action {
-    position: absolute;
-    left: 32%;
+    right: 50%;
     bottom: 25%;
-    width: 36%;
+    transform: translateX(50%);
+    width: 40%;
     z-index: 100;
 }
-.action button {
-border-bottom-color:rgba(0, 0, 0, 0.2);
-border-bottom-left-radius:5px;
-border-bottom-right-radius:5px;
-border-bottom-style:solid;
-border-bottom-width:1px;
-border-image-outset:0px;
-border-image-repeat:stretch;
-border-image-slice:100%;
-border-image-source:none;
-border-image-width:1;
-border-left-color:rgba(0, 0, 0, 0.2);
-border-left-style:solid;
-border-left-width:1px;
-border-right-color:rgba(0, 0, 0, 0.2);
-border-right-style:solid;
-border-right-width:1px;
-border-top-color:rgba(0, 0, 0, 0.2);
-border-top-left-radius:5px;
-border-top-right-radius:5px;
-border-top-style:solid;
-border-top-width:1px;
-box-sizing:border-box;
-height:30px;
-width:32%;
-margin: 0px 8%;
-background-color: #4682B4;
-color: #fff
-}
+
 #player1 {
     z-index: 0;
     width: 50%;
@@ -139,4 +99,220 @@ color: #fff
 
   .card .middle_center { left: 19px; top: 22px; }
 
-/* 用于登录界面的样式*/
+/* 用于记分板的样式*/
+table,
+td,
+th {
+	border-collapse: collapse;
+	border-spacing: 0
+}
+
+table {
+	width: 80%;
+	margin: 0 auto;
+}
+
+td,
+th {
+	border: 1px solid #bcbcbc;
+	padding: 5px 10px;
+	text-align: center;
+	color: #215535;
+}
+
+th {
+	padding: 10px;
+	font-weight: 400;
+	color: #fff;
+	background: #0090d3;
+	cursor: pointer;
+}
+
+tr:nth-of-type(odd) {
+	background: #fff
+}
+
+tr:nth-of-type(even) {
+	background: #eee
+}
+
+h1{
+	font-size: 1.5rem;
+	margin-bottom: 2rem;
+}
+
+input {
+	outline: none
+}
+
+input[type=text] {
+	padding: 3px 6px;
+	font-size: 1.2rem;
+	border: 1px solid #ccc;
+
+}
+
+input[type=text]:focus {
+	border-color: #0090d3;
+	transition: .3s ease-in;
+}
+
+button {
+	display: inline-block;
+	box-sizing: border-box;
+	padding: 10px 30px;
+	background: #0090d3;
+	color: #fff;
+	border: 1px solid #0090d3;
+	border-radius: 3px;	
+	outline: 0;
+
+	transition: .4s ease-out;
+}
+
+button.key {
+	display: inline-block;
+	box-sizing: border-box;
+	padding: 10px 30px;
+	background: #215535;
+	color: #fff;
+	border: 1px solid #215535;
+	border-radius: 3px;	
+	outline: 0;
+	width:100%;
+	transition: .4s ease-out;
+}
+
+button:hover,
+button:focus {
+	opacity: 0.8;
+	cursor: pointer;
+	transition: .15s ease-in;
+}
+
+
+.btn-danger{
+	padding: 5px 15px;
+	border: 1px solid salmon;
+	background: salmon;
+}
+
+.btn-save{
+	border: 1px solid #0090d3;
+	background: #0090d3;
+}
+
+.btn-close{
+	border: 1px solid #ccc;
+	background: #ccc;
+}
+
+
+.container {
+	padding-left: 15px;
+	padding-right: 15px;
+	margin: 10px;
+}
+
+.search-input {
+	width: 80%;
+}
+
+.form-group {
+	margin: 10px;
+}
+
+.form-group > label {
+	display: inline-block;
+	padding-right: 1rem;
+	width: 5rem;
+	text-align: right;
+}
+
+.form-group > input,
+.form-group > select {
+	display: inline-block;
+	height: 1.8rem;
+	line-height: 1.8rem;
+}
+
+.text-center {
+	text-align: center;
+}
+
+.dialog {
+	width: 80%;
+	position: fixed;
+	left: 50%;
+	top: 2em;
+	transform: translateX(-50%);
+	z-index: 2000;
+	visibility: hidden;
+	backface-visibility: hidden;
+	perspective: 1300px;
+}
+
+.dialog-active {
+	visibility: visible;
+}
+
+.dialog-active .dialog-content {
+	opacity: 1;
+	transform: rotateY(0);
+}
+
+.dialog-active ~ .dialog-overlay {
+	opacity: 1;
+	visibility: visible;
+}
+
+.dialog-content {
+	border-radius: 3px;
+	background: #fff;
+	overflow: hidden;
+	box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+	transition: .5s ease-in-out;
+	opacity: 0;
+	transform-style: preserve-3d;
+	transform: rotateY(-70deg);
+}
+
+.dialog-table {
+	height:400px;
+	overflow-y: scroll;
+}
+.dialog-header {
+	background: #0090d3;
+	color: #fff;
+}
+
+.dialog-title {
+	margin: 0;
+	font-size: 2em;
+	text-align: center;
+	font-weight: 200;
+	line-height: 2em;
+}
+
+.dialog-body {
+	padding: 2em;
+}
+
+.dialog-footer {
+	margin: 0 2em;
+	border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.dialog-overlay {
+	content: "";
+	position: fixed;
+	visibility: hidden;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 1000;
+	opacity: 0;
+	background: rgba(0, 0, 0, 0.5);
+	transition: all .6s;
+}

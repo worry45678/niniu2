@@ -9,9 +9,9 @@ main = Blueprint('main', __name__)
 
 @main.route('/')
 def index():
-    notlogin = 1
-    if current_user:
-        notlogin = 0
+    notlogin = 0
+    if current_user.is_anonymous:
+        notlogin = 1
     return render_template('index.html',login=notlogin)
 
 @main.route('/createRoom')

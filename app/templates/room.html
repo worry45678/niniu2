@@ -9,7 +9,6 @@
         <script src="../static/socket.io.min.js"></script>
         <script src="../static/bluebird.min.js"></script>
         <link rel="stylesheet" href="../static/phone.css">
-        <link rel="stylesheet" href="../static/score.css">
     </head>
 
     <body>
@@ -23,6 +22,7 @@
                     <input type="text" v-model="chatContext">
                     <button @click="chat">Chat</button>
                 </div>
+                <div id="action">
                 <div id="ready" v-if="step=='ready' && waitAction">
                     <button type="button" @click="ready">Ready</button>
                     <button>Leave</button>
@@ -44,6 +44,7 @@
                 <div id="show" v-if="step=='show' && waitAction">
                     <button @click="show">亮牌</button>
                 </div>
+            </div>
                 <div>
                     <score-board :users="status.users.slice(0,4)" :title="'得分记录'" :active="active"></score-board>
                 </div>
