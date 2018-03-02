@@ -6,13 +6,16 @@ th {
 }
 
 table {
-	width: 100%;
+	width: 80%;
+	margin: 0 auto;
 }
 
 td,
 th {
 	border: 1px solid #bcbcbc;
 	padding: 5px 10px;
+	text-align: center;
+	color: #215535;
 }
 
 th {
@@ -136,7 +139,7 @@ button:focus {
 }
 
 .dialog {
-	width: 480px;
+	width: 80%;
 	position: fixed;
 	left: 50%;
 	top: 2em;
@@ -172,6 +175,10 @@ button:focus {
 	transform: rotateY(-70deg);
 }
 
+.dialog-table {
+	height:400px;
+	overflow-y: scroll;
+}
 .dialog-header {
 	background: #0090d3;
 	color: #fff;
@@ -191,7 +198,6 @@ button:focus {
 
 .dialog-footer {
 	margin: 0 2em;
-	padding: 1em 0;
 	border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 

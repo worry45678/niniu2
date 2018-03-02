@@ -44,15 +44,18 @@ def action(message):
             paiju.zhuang = paiju.zhuang | pos
             db.session.add(paiju)
             db.session.commit()
-            re = {'user': current_user.name,'seat':session['seat'], 'action':'qiangzhuang', 'error':'ok', 'content':message['content'], 'time':datetime.utcnow().strftime('%Y-%d-%m %H:%M:%S')}
-            emit('action', re, room=room.id)
+        re = {'user': current_user.name,'seat':session['seat'], 'action':'qiangzhuang', 'error':'ok', 'content':message['content'], 'time':datetime.utcnow().strftime('%Y-%d-%m %H:%M:%S')}
+        emit('action', re, room=room.id)
     elif message['action'] == 'choicezhuang':
         # 抢庄选择完毕，选择庄家
         paiju = Paiju.query.filter_by(room_id=room.id).filter_by(finish=0).first()
         pos = 2 ** (session['seat']-1)
         if message['content'] == 1:
             paiju.zhuang = paiju.zhuang | pos
-        y = [i for i in [paiju.zhuang & int(2**(i)) for i in range(5)] if i>0]
+        if paiju.zhuang != 0:
+            y = [i for i in [paiju.zhuang & int(2**(i)) for i in range(5)] if i>0]
+        else:
+            y = [i+1 for i in range(room.count())]
         paiju.zhuang = math.log(random.choice(y))/math.log(2) + 1
         db.session.add(paiju)
         db.session.commit()
@@ -88,7 +91,7 @@ def action(message):
         room.rank = Paiju.query.filter_by(room_id=room.id).filter_by(finish=1).count()
         if room.rank == 20:
             re['action'] = 'end'
-            re['result'] = json.loads(str(Paiju.query.filter_by(room_id=room.id).all()))
+            re['result'] = [i.marks2() for i in Paiju.query.filter_by(room_id=room.id).all()]
             room.end = 1
         db.session.add(room)
         db.session.commit()

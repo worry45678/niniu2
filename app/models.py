@@ -311,6 +311,9 @@ class Paiju(db.Model):
     def __repr__(self):
         return '''{"user1":%d,"user2":%d,"user3":%d,"user4":%d}''' \
                 %(self.user1_mark,self.user2_mark,self.user3_mark,self.user4_mark)
+    
+    def marks2(self):
+        return {'user1':self.user1_mark,'user2':self.user2_mark,'user3':self.user3_mark,'user4':self.user4_mark}
 
 login_manger.anonymous_user = AnonymousUser
 

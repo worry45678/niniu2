@@ -45,7 +45,7 @@
                     <button @click="show">亮牌</button>
                 </div>
                 <div>
-                    <score-board :users="status.users" :title="'title'" :active="active"></score-board>
+                    <score-board :users="status.users.slice(0,4)" :title="'得分记录'" :active="active"></score-board>
                 </div>
             </div>
 
@@ -70,7 +70,7 @@
                         <header class="dialog-header">
                             <h1 class="dialog-title">[[ title]]</h1>
                         </header>
-                        <div>计分表格</div>
+                        <div class="dialog-table">
                         <table>
                             <thead>
                                 <tr>
@@ -83,6 +83,14 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                <tr>
+                                    <td>
+                                        总分
+                                    </td>
+                                    <td v-for="score in $parent.totalScore.slice(0,4)">
+                                        [[ score ]]
+                                    </td>
+                                </tr>
                                 <tr v-for="(item,index) in $parent.result">
                                     <td>
                                         [[ index ]]
@@ -103,12 +111,11 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <footer class="dialog-footer">
-                            <div class="form-group">
-                                <label></label>
-                                <button type="button" onClick="location.href='/'">结束游戏</button>
-                            </div>
-                        </footer>
+                        <div class="form-group">
+                            <label></label>
+                            <button type="button" onClick="location.href='/'">结束游戏</button>
+                        </div>
+                        </div>
                     </div>
                 </div>
                 <div class="dialog-overlay"></div>
@@ -153,6 +160,7 @@
                         waitAction:true,
                         result:[],
                         active: false,
+                        totalScore:[0,0,0,0,0],
                         status: {
                             users:[{'name':'a'},{'name':'b'}]
                         },
@@ -342,7 +350,8 @@
                             case 'finish':{
                                 self.status.users[data.seat-1].status = 'show'
                                 for (i in self.status.users){
-                                    self.status.users[i].mark = self.status.users[i].mark +  data.marks[i]
+                                    self.status.users[i].mark = data.marks[i]
+                                    self.totalScore[i] = self.totalScore[i] +  data.marks[i]
                                 }
                                 self.step = 'ready'
                                 self.waitAction = true
@@ -354,18 +363,27 @@
                                 // 房间所有牌局结束处理
                                 self.status.users[data.seat-1].status = 'show'
                                 for (i in self.status.users){
-                                    self.status.users[i].mark = self.status.users[i].mark +  data.marks[i]
+                                    self.status.users[i].mark = data.marks[i]
+                                    self.totalScore[i] = self.totalScore[i] +  data.marks[i]
                                 }
                                 self.step = 'end'
                                 self.result = data.result
+                                setTimeout(function(){self.active = true},1000)
+                                self.totalScore = [0,0,0,0,0]
+                                for (i in self.result) {
+                                    console.log(self.result[i],self.totalScore)
+                                    self.totalScore[0] += self.result[i].user1
+                                    self.totalScore[1] += self.result[i].user2
+                                    self.totalScore[2] += self.result[i].user3
+                                    self.totalScore[3] += self.result[i].user4
+                                    self.totalScore[4] += self.result[i].user5
+                                }
                                 self.waitAction = true
                                 self.status.rank = data.rank
                                 self.status.users[data.seat-1].pai = data.content
-                                setTimeout(function(){self.active = true},1000)
                                 break
                             };
                             case 'status':{
-                                console.log('status-----------')
                                 self.status.users[data.seat-1].status = data.content
                                 break
                             }
