@@ -274,6 +274,11 @@ class Paiju(db.Model):
             new_paiju = Paiju(room_id=room, paixu=json.dumps(r))
             db.session.add(new_paiju)
             db.session.commit()
+    
+    def choicezhuang(self):
+        l = [self.user1_xiazhu,self.user2_xiazhu,self.user3_xiazhu,self.user4_xiazhu,self.user5_mark]
+        l2 = [2**i for i in range(5) if l[i]==max(l)]
+        self.zhuang = math.log(random.choice(l2))/math.log(2) + 1
 
     def xiazhu(self,pos,zhu):
         if pos == 1:

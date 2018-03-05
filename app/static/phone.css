@@ -10,7 +10,7 @@ p {
     padding: 2px;
 }
 #app {
-    color: #eee;
+    color: #d0d0d0;
     height: 100%;
     background: -webkit-radial-gradient(rgb(16, 173, 1), rgb(6, 110, 6), rgb(3, 82, 3)); /* Safari 5.1 - 6.0 */
     background: -o-radial-gradient(rgb(16, 173, 1), rgb(6, 110, 6), rgb(3, 82, 3)); /* Opera 11.6 - 12.0 */
@@ -22,6 +22,18 @@ p {
     position: absolute;
     right: 50%;
     bottom: 168px;
+    transform: translateX(50%);
+    width: 200px;
+	z-index: 100;
+	text-align: center;
+}
+
+#info {
+	color: #06612a;
+	font-size: 16px;
+    position: absolute;
+    right: 50%;
+    bottom: 50%;
     transform: translateX(50%);
     width: 200px;
 	z-index: 100;
