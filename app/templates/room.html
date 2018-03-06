@@ -15,10 +15,12 @@
         <div id="app">
             <div id="game">
                 <div id="info">
-                    <p>[[ room ]],rank:[[ status.rank ]]</p>
-                    <p><span>chat:</span>[[ chatList ]]</p>
+                    <h4>欢乐牛牛</h4>
+                    <p>[[ room ]]</p>
+                    <p>局数：[[ status.rank ]]</p>
                 </div>
                 <div id="testChat">
+                        <p><span>chat:</span>[[ chatList ]]</p>
                     <input type="text" v-model="chatContext">
                     <button @click="chat">Chat</button>
                 </div>
@@ -28,15 +30,19 @@
                     <button>Leave</button>
                 </div>
                 <div id="qiangzhuang" v-if="step=='qiangzhuang' && waitAction">
-                    <button type="button" @click="qiangzhuang(1)">抢庄</button>
                     <button type="button" @click="qiangzhuang(0)">不抢</button>
+                    <button type="button" @click="qiangzhuang(1)">1倍</button>
+                    <button type="button" @click="qiangzhuang(2)">2倍</button>
+                    <button type="button" @click="qiangzhuang(3)">3倍</button>
                 </div>
+                <!--
                 <div id="xiazhu" v-if="step=='xiazhu1' && waitAction && $refs.player1.player.zhuang === 2 ">
                         <button type="button" @click="xiazhu(1)">1倍</button>
                         <button type="button" @click="xiazhu(2)">2倍</button>
                         <button type="button" @click="xiazhu(3)">3倍</button>
                 </div>
-                <div id="xiazhu2" v-if="step=='xiazhu2' && waitAction">
+                -->
+                <div id="xiazhu" v-if="step=='xiazhu' && waitAction && $refs.player1.player.zhuang !== 2">
                     <button type="button" @click="xiazhu(1)">1倍</button>
                     <button type="button" @click="xiazhu(2)">2倍</button>
                     <button type="button" @click="xiazhu(3)">3倍</button>
@@ -69,7 +75,7 @@
                 <div class="dialog" v-bind:class="{'dialog-active':active }">
                     <div class="dialog-content">
                         <header class="dialog-header">
-                            <h1 class="dialog-title">[[ title]]</h1>
+                            <h1 class="dialog-title">[[ title]]</h1>                      
                         </header>
                         <div class="dialog-table">
                         <table>
@@ -206,11 +212,7 @@
                         this.waitAction = false
                         // 如果所有人都已选择好，发送完成抢庄数据，emit服务器进行选择庄家的操作
                         this.status.users[this.status.seat - 1].status = 'qiangzhuang'
-                        if (this.checkDone('qiangzhuang')){
-                            this.socket.emit('action', {action:'choicezhuang',content:qiang})
-                        } else {
-                            this.socket.emit('action', {action:'qiangzhuang',content:qiang})
-                        }
+                        this.socket.emit('action', {action:'qiangzhuang',content:qiang})
                     },
                     xiazhu: function(zhu){
                         this.waitAction = false
@@ -321,17 +323,15 @@
                                 break
                             };
                             case 'choicezhuang':{
-                                self.status.users[data.seat-1].status = 'qiangzhuang'
-                                self.step = 'xiazhu1'
+                                self.status.users[data.content - 1].status = 'xiazhu'
+                                self.step = 'xiazhu'
                                 self.waitAction = true
-                                self.status.users[data.seat-1].zhuang = data.content[0]
-                                self.status.users[data.content[1] - 1].zhuang = 2
+                                self.status.users[data.content - 1].zhuang = 2
                                 break
                             };
                             case 'xiazhu':{
                                 self.status.users[data.seat-1].zhu = data.content
                                 self.status.users[data.seat-1].status = 'xiazhu'
-                                self.step = 'xiazhu2'
                                 if (self.checkDone('xiazhu')){
                                     self.step = 'show'
                                     self.waitAction = true

@@ -37,6 +37,24 @@ def action(message):
         re = {'user': current_user.name,'seat':session['seat'], 'action':message['action'], 'error':'ok', 'content':pai[session['seat']-1][0:4], 'time':datetime.utcnow().strftime('%Y-%d-%m %H:%M:%S')}
         emit('action', re)
     elif message['action'] == 'qiangzhuang':
+        paiju = Paiju.query.filter_by(room_id=room.id).filter_by(finish=0).first()
+        pos = 2 ** (session['seat']-1)
+        paiju.zhuang = paiju.zhuang | pos
+        paiju.xiazhu(session['seat'],message['content'])
+        if paiju.zhuang == 2 ** room.count() - 1:
+            # 全部选择完毕，执行选庄
+            paiju.choicezhuang()
+            db.session.add(paiju)
+            db.session.commit()
+            re = {'user': current_user.name,'seat':session['seat'], 'action':'choicezhuang', 'error':'ok', 'content':paiju.zhuang, 'time':datetime.utcnow().strftime('%Y-%d-%m %H:%M:%S')}
+            emit('action', re, room=room.id)
+        else:
+            db.session.add(paiju)
+            db.session.commit()
+            re = {'user': current_user.name,'seat':session['seat'], 'action':'qiangzhuang', 'error':'ok', 'content':message['content'], 'time':datetime.utcnow().strftime('%Y-%d-%m %H:%M:%S')}
+            emit('action', re, room=room.id)
+        """
+    elif message['action'] == 'qiangzhuang':
         # 是否抢庄的数据保存到paiju.zhuang字段中
         if message['content'] == 1:
             paiju = Paiju.query.filter_by(room_id=room.id).filter_by(finish=0).first()
@@ -61,6 +79,7 @@ def action(message):
         db.session.commit()
         re = {'user': current_user.name,'seat':session['seat'], 'action':'choicezhuang', 'error':'ok', 'content':[message['content'],paiju.zhuang], 'time':datetime.utcnow().strftime('%Y-%d-%m %H:%M:%S')}
         emit('action', re, room=room.id)
+        """
     elif message['action'] == 'xiazhu':
         paiju = Paiju.query.filter_by(room_id=room.id).filter_by(finish=0).first()
         paiju.xiazhu(session['seat'],message['content'])
