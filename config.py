@@ -40,5 +40,11 @@ class TestConfig(Config):
     """
     SQLALCHEMY_DATABASE_URI = 'sqlite:///test.db'
 
+class ServerConfig(Config):
+    """
+    测试配置
+    """
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123456@localhost/game?charset=utf8'
 
-config = {'develop': DevelopmentConfig, 'default': DefaultConfig, 'test': TestConfig}  # 配置名称
+
+config = {'develop': DevelopmentConfig, 'default': DefaultConfig, 'test': TestConfig, 'server':ServerConfig}  # 配置名称
