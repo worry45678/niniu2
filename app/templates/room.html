@@ -319,14 +319,15 @@
                             };
                             case 'qiangzhuang':{
                                 self.status.users[data.seat-1].status = 'qiangzhuang'
-                                self.status.users[data.seat-1].zhuangzhu = data.content
+                                self.status.users[data.seat-1].zhuangzhu = data.content // 保存抢庄倍数
                                 break
                             };
                             case 'choicezhuang':{
-                                self.status.users[data.content - 1].status = 'xiazhu'
+                                self.status.users[data.content[1] - 1].status = 'xiazhu'
                                 self.step = 'xiazhu'
+                                self.status.users[data.seat-1].zhuangzhu = data.content[0] // 保存抢庄倍数
                                 self.waitAction = true
-                                self.status.users[data.content - 1].zhuang = 2
+                                self.status.users[data.content[1] - 1].zhuang = 2
                                 break
                             };
                             case 'xiazhu':{
@@ -353,6 +354,12 @@
                                 for (i in self.status.users){
                                     self.status.users[i].mark = data.marks[i]
                                     self.totalScore[i] = self.totalScore[i] +  data.marks[i]
+                                }
+                                // 复位数据
+                                for (i of self.status.users){
+                                    i.xiazhu = 0
+                                    i.zhuangzhu = 0
+                                    i.zhuang = 0
                                 }
                                 self.step = 'ready'
                                 self.waitAction = true

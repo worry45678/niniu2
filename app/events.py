@@ -46,7 +46,7 @@ def action(message):
             paiju.choicezhuang()
             db.session.add(paiju)
             db.session.commit()
-            re = {'user': current_user.name,'seat':session['seat'], 'action':'choicezhuang', 'error':'ok', 'content':paiju.zhuang, 'time':datetime.utcnow().strftime('%Y-%d-%m %H:%M:%S')}
+            re = {'user': current_user.name,'seat':session['seat'], 'action':'choicezhuang', 'error':'ok', 'content':[message['content'],paiju.zhuang], 'time':datetime.utcnow().strftime('%Y-%d-%m %H:%M:%S')}
             emit('action', re, room=room.id)
         else:
             db.session.add(paiju)
