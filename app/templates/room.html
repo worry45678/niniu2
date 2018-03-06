@@ -319,7 +319,7 @@
                             };
                             case 'qiangzhuang':{
                                 self.status.users[data.seat-1].status = 'qiangzhuang'
-                                self.status.users[data.seat-1].zhuang = data.content
+                                self.status.users[data.seat-1].zhuangzhu = data.content
                                 break
                             };
                             case 'choicezhuang':{
@@ -330,7 +330,7 @@
                                 break
                             };
                             case 'xiazhu':{
-                                self.status.users[data.seat-1].zhu = data.content
+                                self.status.users[data.seat-1].xiazhu = data.content
                                 self.status.users[data.seat-1].status = 'xiazhu'
                                 if (self.checkDone('xiazhu')){
                                     self.step = 'show'
