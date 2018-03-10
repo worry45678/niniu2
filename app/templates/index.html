@@ -13,6 +13,7 @@
 
     <body>
         <div id="app">
+            <div id="form">
             <div id="login" v-if="notLogin">
                 <input type="text" placeholder="username" v-model="username"> 
                 <input type="text" placeholder="password" v-model="password">
@@ -26,6 +27,7 @@
                 <button type="button" @click="logout">Logout</button>
             </form>
             </div>
+        </div>
         </div>
 
         <script>
